@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dual Live Status Panels</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0e0e0e;
+      color: #ffffff;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    .panel {
+      width: 50%;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #222;
+      background-color: #121212;
+    }
+
+    .panel:last-child {
+      border-right: none;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      color: #00ffd0;
+      text-align: center;
+    }
+
+    pre {
+      flex: 1;
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 20px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-size: 13px;
+      color: #00ff88;
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+      scrollbar-width: thin;
+      scrollbar-color: #00ff88 #1e1e1e;
+    }
+
+    pre::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    pre::-webkit-scrollbar-track {
+      background: #1e1e1e;
+    }
+
+    pre::-webkit-scrollbar-thumb {
+      background-color: #00ff88;
+      border-radius: 8px;
+    }
+
+    p {
+      margin: 0 0 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel">
+      <h2>🌐 Domain A (Server 1)</h2>
+      <pre id="log1">Loading...</pre>
+    </div>
+
+    <div class="panel">
+      <h2>🌐 Domain B (Server 2)</h2>
+      <pre id="log2">Loading...</pre>
+    </div>
+  </div>
+
+  <script>
+    async function fetchAndUpdate(url, elementId) {
+      try {
+        const response = await fetch(url);
+        const text = await response.text();
+        const lines = text.split('\n');
+
+        const container = document.getElementById(elementId);
+        container.innerHTML = ''; // Clear previous content
+
+        for (const line of lines) {
+          const p = document.createElement('p');
+          p.textContent = line;
+          container.appendChild(p);
+        }
+      } catch (err) {
+        const container = document.getElementById(elementId);
+        container.innerHTML = `<p style="color:red;">❌ Error: ${err.message}</p>`;
+      }
+    }
+
+    function startFetching() {
+      setInterval(() => {
+        fetchAndUpdate("http://151.145.43.194:8000/", "log1"); // Replace with actual domain A
+        fetchAndUpdate("http://68.233.113.196:8000/", "log2"); // Replace with actual domain B
+      }, 1000);
+    }
+
+    startFetching();
+  </script>
+</body>
+</html>
